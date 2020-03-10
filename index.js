@@ -1,10 +1,16 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const cookieSession = require("cookie-session");
 const usersRepo = require("./repositories/users");
 
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(
+  cookieSession({
+    keys: ["random keys"]
+  })
+);
 
 app.get("/", (req, res) => {
   res.send(`
@@ -28,6 +34,10 @@ app.post("/", async (req, res) => {
   if (password !== passwordConfirmation) {
     return res.send("Passwords must much");
   }
+  //Create a user in our user repo to represent this person
+  const user = await usersRepo.create({ email, password });
+  //Store the id of that user inside theusers cookie
+
   res.send("Account Created!!!");
 });
 

@@ -15,6 +15,7 @@ app.use(
 app.get("/", (req, res) => {
   res.send(`
   <div>
+  HELLO ${req.session.userId}!
     <form method="post">
         <input name="email" placeholder="email" />
         <input name="password" placeholder="password" />
@@ -37,7 +38,7 @@ app.post("/", async (req, res) => {
   //Create a user in our user repo to represent this person
   const user = await usersRepo.create({ email, password });
   //Store the id of that user inside theusers cookie
-
+  req.session.userId = user.id;
   res.send("Account Created!!!");
 });
 

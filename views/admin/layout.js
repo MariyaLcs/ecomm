@@ -4,8 +4,7 @@ module.exports = ({ content }) => {
     <html lang="en">
     <head></head>
         <body>
-            ${content}
-            <script src="index.js"></script>
+            ${content}            
         </body>
     </html>
 `;

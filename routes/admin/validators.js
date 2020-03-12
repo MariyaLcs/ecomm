@@ -4,11 +4,13 @@ const usersRepo = require("../../repositories/users");
 module.exports = {
   requireTitle: check("title")
     .trim()
-    .isLength({ min: 5, max: 40 }),
+    .isLength({ min: 5, max: 40 })
+    .withMessage("Must be between 5 and 40 characters"),
   requirePrice: check("price")
     .trim()
     .toFloat()
-    .toFloat({ min: 1 }),
+    .isFloat({ min: 1 })
+    .withMessage("Must be a number greater than 1"),
   requireEmail: check("email")
     .trim()
     .normalizeEmail()
@@ -41,7 +43,7 @@ module.exports = {
     .custom(async email => {
       const user = await usersRepo.getOneBy({ email });
       if (!user) {
-        throw new Error("Email not found");
+        throw new Error("Email not found!");
       }
     }),
   requireValidPasswordForUser: check("password")
@@ -51,6 +53,7 @@ module.exports = {
       if (!user) {
         throw new Error("Invalid password");
       }
+
       const validPassword = await usersRepo.comparePasswords(
         user.password,
         password

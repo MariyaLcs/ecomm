@@ -1,6 +1,6 @@
 const layout = require("../layout");
 
-module.exports = ({ req }) => {
+module.exports = () => {
   return layout({
     content: `
   

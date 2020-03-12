@@ -30,9 +30,8 @@ router.post(
     if (password !== passwordConfirmation) {
       return res.send("Passwords must much");
     }
-    //Create a user in our user repo to represent this person
     const user = await usersRepo.create({ email, password });
-    //Store the id of that user inside theusers cookie
+
     req.session.userId = user.id;
     res.send("Account Created!!!");
   }
@@ -47,21 +46,40 @@ router.get("/signin", (req, res) => {
   res.send(signinTemplate());
 });
 
-router.post("/signin", async (req, res) => {
-  const { email, password } = req.body;
-  const user = await usersRepo.getOneBy({ email });
-  if (!user) {
-    return res.send("Email not found");
+router.post(
+  "/signin",
+  [
+    check("email")
+      .trim()
+      .normalizeEmail()
+      .isEmail()
+      .withMessage("Must provide a valid email")
+      .custom(async email => {
+        const user = await usersRepo.getOneBy({ email });
+        if (!user) {
+          throw new Error("Email not found");
+        }
+      }),
+    check("password").trim()
+  ],
+  async (req, res) => {
+    const errors = validationResult(req);
+    console.log(errors);
+    const { email, password } = req.body;
+    const user = await usersRepo.getOneBy({ email });
+    if (!user) {
+      return res.send("Email not found");
+    }
+    const validPassword = await usersRepo.comparePasswords(
+      user.password,
+      password
+    );
+    if (!validPassword) {
+      return res.send("Invalid password");
+    }
+    req.session.userId = user.id;
+    res.send("You are signed in!!!");
   }
-  const validPassword = await usersRepo.comparePasswords(
-    user.password,
-    password
-  );
-  if (!validPassword) {
-    return res.send("Invalid password");
-  }
-  req.session.userId = user.id;
-  res.send("You are signed in!!!");
-});
+);
 
 module.exports = router;

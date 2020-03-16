@@ -1,6 +1,11 @@
 [
   {
-    "items": [],
+    "items": [
+      {
+        "id": "ac3d7258",
+        "quantity": 2
+      }
+    ],
     "id": "9c1a2b7f"
   }
 ]
